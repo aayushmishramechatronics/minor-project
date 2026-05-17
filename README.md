@@ -1,2 +1,3 @@
 # minor-project
-Design, Analysis, and Experimental Validation of Robust Sliding Mode Control for Attitude Stabilization of a Quadcopter UAV  under External Disturbances
+design, analysis, and experimental validation of robust sliding mode control for attitude stabilization of a quadcopter UAV under external disturbances
+
