@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Repository Structure | Quadcopter SMC</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=Literata:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+
+/* ─── RESET & ROOT ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg:        #0d0f14;
+  --bg2:       #13161d;
+  --bg3:       #1a1e28;
+  --bg4:       #222736;
+  --border:    #2a3045;
+  --border2:   #363d54;
+
+  --text:      #d8dce8;
+  --text2:     #9098b0;
+  --text3:     #5a6278;
+
+  --blue:      #4a90e2;
+  --blue2:     #2d6fd4;
+  --blue-glow: rgba(74,144,226,0.15);
+
+  --green:     #3ec98a;
+  --green2:    #27a870;
+  --green-glow:rgba(62,201,138,0.12);
+
+  --orange:    #f0a050;
+  --orange2:   #d4823a;
+  --orange-glow:rgba(240,160,80,0.12);
+
+  --purple:    #9b72dd;
+  --purple2:   #7c52c0;
+  --purple-glow:rgba(155,114,221,0.12);
+
+  --red:       #e05c5c;
+  --red-glow:  rgba(224,92,92,0.12);
+
+  --yellow:    #e8c84a;
+  --yellow-glow:rgba(232,200,74,0.12);
+
+  --teal:      #40c8d0;
+  --teal-glow: rgba(64,200,208,0.12);
+
+  --r: 8px;
+  --r2: 12px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Literata', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 60px 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(74,144,226,0.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 10%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(62,201,138,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 4.5vw, 58px);
+  font-weight: 800;
+  line-height: 1.08;
+  color: #ffffff;
+  margin-bottom: 20px;
+  max-width: 840px;
+}
+.hero h1 span { color: var(--blue); }
+.hero-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 680px;
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 40px;
+}
+.hero-badges {
+  display: flex; flex-wrap: wrap; gap: 10px;
+}
+.badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.b-blue   { border-color: var(--blue);   color: var(--blue);   background: var(--blue-glow); }
+.b-green  { border-color: var(--green);  color: var(--green);  background: var(--green-glow); }
+.b-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+.b-purple { border-color: var(--purple); color: var(--purple); background: var(--purple-glow); }
+.b-teal   { border-color: var(--teal);   color: var(--teal);   background: var(--teal-glow); }
+.b-yellow { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-glow); }
+
+/* ─── LAYOUT ─── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 280px);
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 32px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: var(--bg2); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.nav-group { margin-bottom: 8px; }
+.nav-group-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 12px 24px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  text-decoration: none;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+.nav-link:hover { color: var(--text); background: var(--bg3); border-left-color: var(--border2); }
+.nav-link.active { color: var(--blue); background: var(--blue-glow); border-left-color: var(--blue); }
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── MAIN CONTENT ─── */
+.content {
+  padding: 48px 56px 100px;
+  min-width: 0;
+}
+
+/* ─── SECTION HEADING ─── */
+.section {
+  margin-bottom: 72px;
+  scroll-margin-top: 32px;
+}
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+.section-intro {
+  color: var(--text2);
+  font-size: 14.5px;
+  line-height: 1.8;
+  max-width: 780px;
+  margin-bottom: 32px;
+  font-style: italic;
+}
+
+/* ─── FILE TREE ─── */
+.tree {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  font-family: 'Space Mono', monospace;
+  font-size: 12.5px;
+}
+.tree-header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tree-header-title {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+.tree-dots { display: flex; gap: 6px; }
+.tree-dot { width: 10px; height: 10px; border-radius: 50%; }
+.tree-dot:nth-child(1) { background: var(--red); }
+.tree-dot:nth-child(2) { background: var(--yellow); }
+.tree-dot:nth-child(3) { background: var(--green); }
+.tree-body { padding: 20px; }
+
+.tree-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 2px 0;
+  line-height: 1.6;
+}
+.tree-indent { color: var(--border2); white-space: pre; flex-shrink: 0; }
+.tree-icon { flex-shrink: 0; margin-right: 6px; }
+.tree-name { color: var(--text); font-size: 12.5px; }
+.tree-name.folder { color: var(--blue); font-weight: 700; }
+.tree-name.py   { color: var(--yellow); }
+.tree-name.m    { color: var(--orange); }
+.tree-name.yaml { color: var(--teal); }
+.tree-name.md   { color: var(--text2); }
+.tree-name.txt  { color: var(--text3); }
+.tree-name.sh   { color: var(--green); }
+.tree-name.json { color: var(--purple); }
+.tree-name.slx  { color: var(--orange); }
+.tree-name.launch { color: var(--teal); }
+.tree-desc {
+  font-family: 'Literata', serif;
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-left: 12px;
+  font-style: italic;
+  align-self: center;
+}
+
+/* ─── TOOL CARDS ─── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.tool-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 24px;
+  transition: border-color .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.tool-card:hover { border-color: var(--border2); }
+.tc-blue::before   { background: var(--blue); }
+.tc-green::before  { background: var(--green); }
+.tc-orange::before { background: var(--orange); }
+.tc-purple::before { background: var(--purple); }
+.tc-teal::before   { background: var(--teal); }
+.tc-yellow::before { background: var(--yellow); }
+.tc-red::before    { background: var(--red); }
+
+.tool-badge {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.tool-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.tool-type {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.tool-desc {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--text2);
+}
+.tool-uses {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tool-use-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9.5px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+
+/* ─── COMMAND BLOCK ─── */
+.cmd-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  margin: 16px 0;
+}
+.cmd-header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cmd-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.cmd-lang {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--green);
+  letter-spacing: 0.06em;
+}
+.cmd-body { padding: 18px 20px; }
+.cmd-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 6px 0;
+}
+.cmd-prompt { color: var(--green); font-family: 'Space Mono', monospace; font-size: 12px; flex-shrink: 0; }
+.cmd-text { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); word-break: break-all; }
+.cmd-comment { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); font-style: italic; }
+.cmd-section-sep { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+/* ─── FLOW DIAGRAM ─── */
+.flow-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 32px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+/* ─── PHASE ROW ─── */
+.phase-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+.phase-num-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+.phase-content {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  min-width: 0;
+}
+.phase-content h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.phase-content p {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+.phase-langs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.lang-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 9.5px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+/* ─── INFO CARD ─── */
+.info-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 24px 28px;
+  margin: 16px 0;
+}
+.info-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-card p {
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.78;
+  margin-bottom: 10px;
+}
+.info-card p:last-child { margin-bottom: 0; }
+
+/* ─── CONNECTOR DIAGRAM ─── */
+.connector-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+  margin: 20px 0;
+}
+.conn-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 20px;
+}
+.conn-box h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.conn-box p { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.conn-arrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  color: var(--border2);
+  text-align: center;
+}
+
+/* ─── DEFINITION LIST ─── */
+.def-list { margin: 16px 0; }
+.def-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+.def-item:first-child { border-top: 1px solid var(--border); }
+.def-term {
+  font-family: 'Space Mono', monospace;
+  font-size: 11.5px;
+  color: var(--text);
+  padding-right: 20px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+.def-desc { font-size: 13.5px; color: var(--text2); line-height: 1.75; }
+
+/* ─── SCROLL UTIL ─── */
+.scroll-anchor { scroll-margin-top: 32px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 32px 20px 80px; }
+  .hero { padding: 48px 28px 40px; }
+  .connector-grid { grid-template-columns: 1fr; }
+  .conn-arrow { transform: rotate(90deg); }
+  .def-item { grid-template-columns: 1fr; gap: 4px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Quadcopter SMC Project &nbsp;|&nbsp; Repository Architecture & Toolchain</div>
+  <h1>Complete <span>Code Repository</span><br>Structure & Developer Guide</h1>
+  <p class="hero-sub">Every folder, every file, every tool, every command explained in plain English. A complete map of how MATLAB, Python, ROS, and PX4 work together to take a mathematical controller from paper to a flying drone.</p>
+  <div class="hero-badges">
+    <span class="badge b-orange">MATLAB / Simulink</span>
+    <span class="badge b-yellow">Python 3.10</span>
+    <span class="badge b-teal">ROS Noetic</span>
+    <span class="badge b-blue">PX4 Autopilot</span>
+    <span class="badge b-purple">MAVROS</span>
+    <span class="badge b-green">Pixhawk 4</span>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Structure</div>
+      <a class="nav-link active" href="#repo">
+        <div class="nav-dot" style="background:var(--blue)"></div>Repository Tree
+      </a>
+      <a class="nav-link" href="#languages">
+        <div class="nav-dot" style="background:var(--green)"></div>Languages Used
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">MATLAB Layer</div>
+      <a class="nav-link" href="#matlab-tb">
+        <div class="nav-dot" style="background:var(--orange)"></div>Toolboxes
+      </a>
+      <a class="nav-link" href="#matlab-cmds">
+        <div class="nav-dot" style="background:var(--orange)"></div>Key Commands
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Python Layer</div>
+      <a class="nav-link" href="#python-libs">
+        <div class="nav-dot" style="background:var(--yellow)"></div>Libraries
+      </a>
+      <a class="nav-link" href="#python-cmds">
+        <div class="nav-dot" style="background:var(--yellow)"></div>Install Commands
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">ROS Layer</div>
+      <a class="nav-link" href="#ros-pkgs">
+        <div class="nav-dot" style="background:var(--teal)"></div>Packages
+      </a>
+      <a class="nav-link" href="#ros-cmds">
+        <div class="nav-dot" style="background:var(--teal)"></div>Key Commands
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Hardware Layer</div>
+      <a class="nav-link" href="#px4">
+        <div class="nav-dot" style="background:var(--purple)"></div>PX4 & QGroundControl
+      </a>
+      <a class="nav-link" href="#hw-cmds">
+        <div class="nav-dot" style="background:var(--purple)"></div>Setup Commands
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Integration</div>
+      <a class="nav-link" href="#flow">
+        <div class="nav-dot" style="background:var(--green)"></div>How It All Connects
+      </a>
+      <a class="nav-link" href="#phases">
+        <div class="nav-dot" style="background:var(--green)"></div>Phase-by-Phase Usage
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <!-- ══════════════════════════════════════
+         SECTION 1: REPO TREE
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="repo">
+      <div class="section-label">Section 01</div>
+      <h2 class="section-title">Complete Repository Tree</h2>
+      <p class="section-intro">This is the full folder and file layout for the entire project. Every folder has a single responsibility. Files are grouped by what they do, not by what language they use. Colour coding shows the file type at a glance.</p>
+
+      <div class="tree">
+        <div class="tree-header">
+          <div class="tree-dots"><div class="tree-dot"></div><div class="tree-dot"></div><div class="tree-dot"></div></div>
+          <div class="tree-header-title">quadcopter_smc_project/</div>
+        </div>
+        <div class="tree-body">
+
+          <!-- ROOT -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📄</span><span class="tree-name md">README.md</span><span class="tree-desc">Project overview, setup steps, how to run everything</span></div>
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📄</span><span class="tree-name txt">requirements.txt</span><span class="tree-desc">Python package versions list</span></div>
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📄</span><span class="tree-name json">package.json</span><span class="tree-desc">ROS package manifest (name, dependencies, version)</span></div>
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📄</span><span class="tree-name sh">setup.sh</span><span class="tree-desc">One-shot script that installs all dependencies on Raspberry Pi</span></div>
+          <div class="tree-row" style="margin:8px 0 2px"><span class="tree-indent">│</span></div>
+
+          <!-- 01 MODEL -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">01_model/</span><span class="tree-desc">Phase 1 — All dynamic modelling scripts</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">parameters.m</span><span class="tree-desc">All physical constants in one place (mass, inertia, kF, kM, arm length)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">dynamics.m</span><span class="tree-desc">The nonlinear ODE function — Newton-Euler equations (the core model)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">rotation_matrix.m</span><span class="tree-desc">Computes the ZYX rotation matrix R from Euler angles</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">motor_mixing.m</span><span class="tree-desc">Converts desired torques and thrust into individual motor speeds</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">simulate_openloop.m</span><span class="tree-desc">Runs the model with no controller to validate it is physically correct</span></div>
+          <div class="tree-row"><span class="tree-indent">│   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">Saved plots from open-loop validation runs</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 02 PID -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">02_pid_baseline/</span><span class="tree-desc">Phase 2 — PID controller design and tuning</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">pid_design.m</span><span class="tree-desc">Linearises the model at hover and computes initial PID gains</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">pid_tune.m</span><span class="tree-desc">Ziegler-Nichols tuning and iterative gain refinement</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name slx">pid_simulink.slx</span><span class="tree-desc">Simulink closed-loop model with PID blocks and nonlinear plant</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">pid_step_response.m</span><span class="tree-desc">Runs and plots the step response test for all three axes</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">pid_disturbance.m</span><span class="tree-desc">Injects step disturbance and records PID recovery performance</span></div>
+          <div class="tree-row"><span class="tree-indent">│   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">PID step response, disturbance rejection, and gain tuning plots</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 03 SMC -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">03_smc_design/</span><span class="tree-desc">Phase 3 — The core SMC derivation and stability proof</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">sliding_surface.m</span><span class="tree-desc">Defines all three sliding surfaces and the lambda parameters</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">equivalent_control.m</span><span class="tree-desc">Computes the u_eq term by cancelling known nominal dynamics</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">switching_control.m</span><span class="tree-desc">Computes the u_sw term using saturation function (boundary layer)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">smc_controller.m</span><span class="tree-desc">Combines u_eq and u_sw into the complete torque command</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">lyapunov_verify.m</span><span class="tree-desc">Uses Symbolic Toolbox to verify V_dot is negative-definite algebraically</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">gain_selection.m</span><span class="tree-desc">Computes required switching gain K from measured disturbance bound D</span></div>
+          <div class="tree-row"><span class="tree-indent">│   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">Sliding surface convergence plots and Lyapunov function decay curves</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 04 SIMULATION -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">04_simulation/</span><span class="tree-desc">Phase 4 — Full Simulink model and all comparison tests</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name slx">full_model.slx</span><span class="tree-desc">Master Simulink file — nonlinear plant, PID, SMC, disturbance injector</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">run_all_tests.m</span><span class="tree-desc">Batch script that runs all 5 test cases for both PID and SMC</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">test_step_response.m</span><span class="tree-desc">Test 1: 10-degree roll step, extract rise time and settling time</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">test_step_disturbance.m</span><span class="tree-desc">Test 2: 0.01 N.m step torque disturbance at t=3s</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">test_sine_disturbance.m</span><span class="tree-desc">Test 3: Sinusoidal disturbance, compute steady-state RMSE</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">test_coupled_axes.m</span><span class="tree-desc">Test 4: Simultaneous roll and pitch to excite coupling terms</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">test_chattering.m</span><span class="tree-desc">Test 5: Compare sign() vs sat() control signals, compute chattering index</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">compare_results.m</span><span class="tree-desc">Builds the PID vs SMC comparison table with all six metrics</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">generate_figures.m</span><span class="tree-desc">Exports all results figures as PDF at 600 DPI for report inclusion</span></div>
+          <div class="tree-row"><span class="tree-indent">│   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">All simulation output plots (auto-generated by generate_figures.m)</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 05 HARDWARE -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">05_hardware/</span><span class="tree-desc">Phase 5 — Physical drone, PX4 config, companion computer code</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📁</span><span class="tree-name folder">px4_params/</span><span class="tree-desc">PX4 parameter files exported from QGroundControl</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">vehicle_params.params</span><span class="tree-desc">All calibrated PX4 parameters (gains, offboard timeout, log rates)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   └── </span><span class="tree-icon">📄</span><span class="tree-name txt">esc_calibration.params</span><span class="tree-desc">ESC PWM min/max values after calibration</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📁</span><span class="tree-name folder">motor_characterisation/</span><span class="tree-desc">Thrust stand data and parameter fitting</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">thrust_stand_fit.m</span><span class="tree-desc">Fits kF and kM from raw thrust stand CSV measurements</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   └── </span><span class="tree-icon">📄</span><span class="tree-name txt">thrust_data_raw.csv</span><span class="tree-desc">Raw measurements: motor RPM, thrust (N), torque (N.m) at 3 voltages</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📁</span><span class="tree-name folder">ros_ws/</span><span class="tree-desc">The ROS workspace on the Raspberry Pi companion computer</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">src/</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │       └── </span><span class="tree-icon">📁</span><span class="tree-name folder">smc_controller_pkg/</span><span class="tree-desc">Our custom ROS package</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name py">smc_node.py</span><span class="tree-desc">Main ROS node: subscribes to IMU, runs SMC, publishes motor commands</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name py">smc_algorithm.py</span><span class="tree-desc">Pure Python translation of the Phase 3 SMC math (no ROS dependency)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name py">motor_mixer.py</span><span class="tree-desc">Inverts mixing matrix to get individual motor speeds from torques</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name py">mavlink_bridge.py</span><span class="tree-desc">Handles all MAVROS communication (subscribe, publish, arm, mode switch)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name yaml">config.yaml</span><span class="tree-desc">All tuning parameters: lambda, K, phi — change without editing code</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           ├── </span><span class="tree-icon">📄</span><span class="tree-name launch">smc_flight.launch</span><span class="tree-desc">ROS launch file that starts all nodes in the correct order</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │           └── </span><span class="tree-icon">📁</span><span class="tree-name folder">test/</span><span class="tree-desc">Unit tests for smc_algorithm.py (bench-testable without hardware)</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 06 VALIDATION -->
+          <div class="tree-row"><span class="tree-indent">├── </span><span class="tree-icon">📁</span><span class="tree-name folder">06_experimental/</span><span class="tree-desc">Phase 6 — Flight logs, analysis scripts, results</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📁</span><span class="tree-name folder">flight_logs/</span><span class="tree-desc">Raw PX4 ULog files from every flight test (not committed to git — too large)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">smc_step_01.ulg</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">pid_step_01.ulg</span></div>
+          <div class="tree-row"><span class="tree-indent">│   │   └── </span><span class="tree-icon">📄</span><span class="tree-name txt">...</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📁</span><span class="tree-name folder">csv_data/</span><span class="tree-desc">Converted CSV files from ulog2csv (one per topic per flight)</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">analyse_flight.m</span><span class="tree-desc">Loads CSV, extracts all performance metrics, runs paired t-test</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name m">plot_comparison.m</span><span class="tree-desc">Side-by-side PID vs SMC plots for the report</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name py">convert_logs.py</span><span class="tree-desc">Batch converts all ULog files to CSV using pyulog</span></div>
+          <div class="tree-row"><span class="tree-indent">│   ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">results_summary.csv</span><span class="tree-desc">Final table: all metrics for all test cases for both controllers</span></div>
+          <div class="tree-row"><span class="tree-indent">│   └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">Experimental result plots for the report</span></div>
+          <div class="tree-row" style="margin:4px 0"><span class="tree-indent">│</span></div>
+
+          <!-- 07 REPORT -->
+          <div class="tree-row"><span class="tree-indent">└── </span><span class="tree-icon">📁</span><span class="tree-name folder">07_report/</span><span class="tree-desc">Phase 7 — Final project report</span></div>
+          <div class="tree-row"><span class="tree-indent">    ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">main_report.docx</span><span class="tree-desc">The complete final year project report in Word format</span></div>
+          <div class="tree-row"><span class="tree-indent">    ├── </span><span class="tree-icon">📄</span><span class="tree-name txt">references.bib</span><span class="tree-desc">BibTeX file with all 20 reference entries for the bibliography</span></div>
+          <div class="tree-row"><span class="tree-indent">    └── </span><span class="tree-icon">📁</span><span class="tree-name folder">figures/</span><span class="tree-desc">All report figures (symlinked from simulation and experimental folders)</span></div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 2: LANGUAGES
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="languages">
+      <div class="section-label">Section 02</div>
+      <h2 class="section-title">Programming Languages and Their Roles</h2>
+      <p class="section-intro">Four languages are used in this project. Each one is assigned to the tasks it does best. They never overlap in responsibility, which keeps the code clean and easy to debug.</p>
+
+      <div class="tool-grid">
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Mathematics</div>
+          <div class="tool-name">MATLAB</div>
+          <div class="tool-type">Primary language for all maths, modelling, and simulation</div>
+          <div class="tool-desc">MATLAB is used for everything that involves mathematics, from writing the dynamic equations to running the Simulink simulations to post-processing flight data. It is the only language with the toolboxes needed for symbolic computation, Lyapunov verification, control system design, and Simulink modelling all in one environment. Every formula derived on paper gets validated first in MATLAB before it is sent to hardware.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">Phases 1-4</span>
+            <span class="tool-use-tag">Phase 6 analysis</span>
+            <span class="tool-use-tag">Report figures</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Hardware Bridge</div>
+          <div class="tool-name">Python 3.10</div>
+          <div class="tool-type">Control loop on the Raspberry Pi companion computer</div>
+          <div class="tool-desc">Python runs the actual SMC algorithm in real time on the Raspberry Pi that sits on the drone. It talks to the Pixhawk using ROS and MAVROS, reads the attitude measurements at 250 Hz, runs the SMC math, and sends motor commands back. Python is chosen here because it has excellent ROS bindings, NumPy for fast matrix math, and it can be edited and restarted during testing far faster than compiled code. The SMC algorithm itself is a direct translation of the MATLAB maths into Python.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">Phase 5 live control</span>
+            <span class="tool-use-tag">Log conversion</span>
+            <span class="tool-use-tag">Hardware tests</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Middleware</div>
+          <div class="tool-name">ROS (Robot Operating System)</div>
+          <div class="tool-type">Message passing framework between all software nodes</div>
+          <div class="tool-desc">ROS is not a programming language itself but a framework that lets separate programs talk to each other by sending typed messages over named topics. On this drone, the MAVROS node (which talks to Pixhawk) and the SMC node (which runs our controller) are separate programs. ROS manages the communication between them so that the SMC node can subscribe to attitude data and publish control commands without needing to know anything about MAVLink protocol details. This separation makes testing and debugging much easier.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">Phase 5 integration</span>
+            <span class="tool-use-tag">Node communication</span>
+            <span class="tool-use-tag">Topic publish/subscribe</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-purple">
+          <div class="tool-badge b-purple">Firmware</div>
+          <div class="tool-name">PX4 / C++ (pre-built firmware)</div>
+          <div class="tool-type">Flight controller firmware — we configure it, not rewrite it</div>
+          <div class="tool-desc">The Pixhawk runs PX4 Autopilot firmware written in C++. We do not modify the PX4 source code. Instead we configure it through QGroundControl and then command it from our Python SMC node over OFFBOARD mode via MAVLink. PX4 handles all the safety-critical low-level tasks: ESC signal generation, failsafe monitoring, GPS fusion, and hardware-level sensor reading. This division of responsibility is essential: PX4 handles the hardware and we handle the control algorithm.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">Phase 5 hardware</span>
+            <span class="tool-use-tag">ESC control</span>
+            <span class="tool-use-tag">Sensor fusion</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 3: MATLAB TOOLBOXES
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="matlab-tb">
+      <div class="section-label">Section 03</div>
+      <h2 class="section-title">MATLAB Toolboxes — What Each One Does</h2>
+      <p class="section-intro">A MATLAB toolbox is a collection of pre-built functions for a specific domain. Without the right toolboxes you cannot run certain commands. Here is every toolbox this project uses, what it contains, and which project phase needs it.</p>
+
+      <div class="tool-grid">
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Required — Phase 2</div>
+          <div class="tool-name">Control System Toolbox</div>
+          <div class="tool-type">MATLAB add-on</div>
+          <div class="tool-desc">This toolbox provides functions for designing, analysing, and simulating classical and modern linear control systems. For this project it is used to linearise the nonlinear quadcopter model around the hover operating point, compute the transfer function for each decoupled axis, analyse stability margins using Bode and Nyquist plots, and calculate initial PID gains. The key function linearize() extracts state-space matrices A and B from the Simulink model automatically, saving the manual algebra of computing Jacobians by hand.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">linearize()</span>
+            <span class="tool-use-tag">pidtune()</span>
+            <span class="tool-use-tag">bode()</span>
+            <span class="tool-use-tag">stepinfo()</span>
+            <span class="tool-use-tag">margin()</span>
+            <span class="tool-use-tag">tf()</span>
+            <span class="tool-use-tag">ss()</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Required — Phase 3</div>
+          <div class="tool-name">Symbolic Math Toolbox</div>
+          <div class="tool-type">MATLAB add-on</div>
+          <div class="tool-desc">This toolbox lets MATLAB manipulate mathematical expressions symbolically rather than numerically. Think of it as a built-in computer algebra system similar to Mathematica. For this project it is used in lyapunov_verify.m to check that the time derivative of the Lyapunov function V equals half s squared is truly negative when the control law is substituted in. The toolbox handles the chain rule differentiations and algebraic simplifications automatically, so any error in the hand derivation is caught before the Simulink simulation is ever built.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">syms</span>
+            <span class="tool-use-tag">diff()</span>
+            <span class="tool-use-tag">simplify()</span>
+            <span class="tool-use-tag">subs()</span>
+            <span class="tool-use-tag">assume()</span>
+            <span class="tool-use-tag">solve()</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Required — Phase 4</div>
+          <div class="tool-name">Simulink (base product)</div>
+          <div class="tool-type">MATLAB graphical simulation environment</div>
+          <div class="tool-desc">Simulink is not a toolbox but MATLAB's graphical block-diagram simulation environment. It is where the entire closed-loop control system is built and tested. The nonlinear plant, PID controller, SMC controller, reference signal generator, and disturbance injector are all separate blocks connected by signal lines. Simulink runs the simulation using a numerical solver under the hood, but the engineer sees the system as a block diagram rather than written code, which makes the architecture much easier to understand and explain in a report.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">sim()</span>
+            <span class="tool-use-tag">MATLAB Fn Block</span>
+            <span class="tool-use-tag">Step Block</span>
+            <span class="tool-use-tag">To Workspace</span>
+            <span class="tool-use-tag">ode4 solver</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Required — Phase 4</div>
+          <div class="tool-name">Simulink Control Design Toolbox</div>
+          <div class="tool-type">MATLAB add-on</div>
+          <div class="tool-desc">This toolbox extends Simulink with tools for tuning and analysing controllers directly within a Simulink model. The most useful feature for this project is the ability to compute the operating point (the hover condition) from within a running Simulink model using findop(), and then linearise the entire model at that operating point using linearize(). This gives the linear A and B matrices directly from the graphical model without requiring any manual derivation of the Jacobian matrices, saving significant time and reducing the chance of errors.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">findop()</span>
+            <span class="tool-use-tag">linearize()</span>
+            <span class="tool-use-tag">PID Tuner app</span>
+            <span class="tool-use-tag">Operating point spec</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Required — Phase 6</div>
+          <div class="tool-name">Statistics and Machine Learning Toolbox</div>
+          <div class="tool-type">MATLAB add-on</div>
+          <div class="tool-desc">This toolbox provides statistical analysis functions needed to properly validate the experimental results. For this project, the most critical function is ttest() which performs the paired t-test that determines whether the performance difference between SMC and PID is statistically significant at the 5 percent level. Without statistical testing, reporting that SMC is better than PID carries no academic weight because the difference might be due to random variation. This toolbox makes the experimental analysis rigorous and defensible to examiners.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">ttest()</span>
+            <span class="tool-use-tag">mean()</span>
+            <span class="tool-use-tag">std()</span>
+            <span class="tool-use-tag">normplot()</span>
+            <span class="tool-use-tag">boxplot()</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-orange">
+          <div class="tool-badge b-orange">Optional — Phase 1</div>
+          <div class="tool-name">Aerospace Toolbox</div>
+          <div class="tool-type">MATLAB add-on</div>
+          <div class="tool-desc">This toolbox provides aerospace-specific functions including standard atmosphere models, coordinate transformations, and quaternion rotation utilities. For this project it is helpful for verifying the rotation matrix computation in rotation_matrix.m using the toolbox's built-in angle2dcm() function as a cross-check. It also provides the angle2quat() and quat2angle() functions which are useful if the project later considers quaternion-based attitude representation as an alternative to Euler angles.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">angle2dcm()</span>
+            <span class="tool-use-tag">angle2quat()</span>
+            <span class="tool-use-tag">dcm2angle()</span>
+            <span class="tool-use-tag">Cross-check rotation</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 4: MATLAB COMMANDS
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="matlab-cmds">
+      <div class="section-label">Section 04</div>
+      <h2 class="section-title">Essential MATLAB Commands Explained</h2>
+      <p class="section-intro">These are the specific MATLAB commands used most frequently in this project. Each one is explained so you know exactly what it does and why it is needed, not just how to type it.</p>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Phase 1 — Model Validation Commands</div>
+          <div class="cmd-lang">MATLAB</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">options = odeset('RelTol', 1e-8, 'AbsTol', 1e-10);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Sets the ODE solver tolerance. RelTol controls how accurate each integration step must be relative to the solution magnitude. AbsTol controls accuracy when the solution is near zero. Tight tolerances are essential for nonlinear systems because the default (1e-3) can miss small but physically important coupling effects.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">[t, x] = ode45(@(t,x) dynamics(t, x, u, params), t_span, x0, options);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">The main simulation call. ode45 uses a 4th/5th order Runge-Kutta method to integrate the ODE forward in time. The @(t,x) part is an anonymous function handle that passes the current time and state to our dynamics.m file at every solver step. t_span is [0, 5] for 5 seconds. x0 is the initial state (zeros for starting at rest).</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">phi_deg = rad2deg(x_out(:, 1));</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Converts the roll angle column from radians (what the ODE uses internally) to degrees (what humans read). The colon operator x(:,1) selects the entire first column — all timestep values of the first state variable (phi).</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Phase 2 — PID Design Commands</div>
+          <div class="cmd-lang">MATLAB + Control System Toolbox</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">op = operpoint('pid_simulink');</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Finds the hover operating point inside the Simulink model called pid_simulink.slx. An operating point is the set of state values and inputs where all derivatives are zero (equilibrium). For this drone that is the hover condition where all angles and rates are zero.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">sys = linearize('pid_simulink', op);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Automatically computes the Jacobian matrices A, B, C, D at the operating point by numerically perturbing each state and input a tiny amount and measuring how the output changes. This is much less error prone than computing the Jacobians by hand and gives you a standard state-space object you can use with all Control System Toolbox functions.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">info = stepinfo(y, t, 'SettlingTimeThreshold', 0.02);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Automatically extracts the step response metrics from a time-series output y. The SettlingTimeThreshold of 0.02 means settling is defined as staying within 2 percent of the final value. Returns a struct with fields: RiseTime, SettlingTime, Overshoot, Peak, and SteadyStateValue. This is used in compare_results.m to build the performance table without manually reading values off plots.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">[Gm, Pm, Wgm, Wpm] = margin(sys_open_loop);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Computes the gain margin Gm and phase margin Pm of the open-loop transfer function. Gain margin should be above 6 dB and phase margin above 45 degrees for a robustly stable linear system. If these margins are too small, disturbances or model uncertainty can cause the PID closed loop to go unstable.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Phase 3 — Symbolic Lyapunov Verification</div>
+          <div class="cmd-lang">MATLAB + Symbolic Math Toolbox</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">syms s e edot lambda K D eta real positive</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Declares symbolic variables with the assumption that they are all real and positive. This lets MATLAB simplify expressions correctly — for example it knows that K minus D is positive when K is greater than D, which is exactly the assumption used in the stability proof.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">V = (1/2) * s^2;</span></div>
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">Vdot = simplify(diff(V, s) * sdot_closed_loop);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Computes the time derivative of the Lyapunov function using the chain rule: V_dot equals dV/ds times ds/dt. The simplify() function reduces the result to its simplest algebraic form. We then check that this expression is always negative by confirming it equals something like -eta times abs(s) or less.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">is_negative = isAlways(Vdot <= -eta * abs(s));</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Checks symbolically whether the condition V_dot is less than or equal to negative eta times abs(s) is always true given the assumptions. If this returns true, the Lyapunov stability proof is verified algebraically and the SMC design is theoretically correct before a single simulation is run.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Phase 4 — Batch Simulation and Results</div>
+          <div class="cmd-lang">MATLAB + Simulink</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">simOut = sim('full_model', 'StopTime', '10');</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Runs the Simulink model from a MATLAB script rather than pressing the play button manually. This is how run_all_tests.m executes all five test cases back-to-back automatically. The results are captured in simOut and can be post-processed immediately in the same script.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">rmse = sqrt(mean((phi_ref - phi_actual).^2));</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Computes the Root Mean Square Error between the desired and actual roll angle over the test window. The .^ operator applies squaring element-wise to the whole vector. RMSE is the primary steady-state tracking error metric used in the simulation-to-hardware comparison table.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">exportgraphics(gcf, 'figures/step_response.pdf', 'Resolution', 600);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Exports the current figure (gcf means get current figure) as a high-resolution PDF at 600 DPI. PDF is used rather than PNG because PDF is vector-based, meaning the figure looks perfectly sharp at any zoom level in the report. This is the correct format for academic publication-quality figures.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Phase 6 — Experimental Analysis Commands</div>
+          <div class="cmd-lang">MATLAB + Statistics Toolbox</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">smc_data = readtable('csv_data/smc_step_01_vehicle_attitude.csv');</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Reads the flight log CSV file into a MATLAB table where each column is a variable (timestamp, roll_angle, pitch_angle, etc.). Tables preserve column names which makes the code self-documenting compared to raw matrix indexing.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">[h, p, ci] = ttest(smc_metric, pid_metric);</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Performs a two-sided paired t-test comparing the SMC metric vector to the PID metric vector across the repeated trials. h is 1 if the null hypothesis (no difference) is rejected at the 5 percent level. p is the p-value. ci is the 95 percent confidence interval for the difference. If h equals 1 and p is less than 0.05, the performance difference is statistically significant.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">»</span><span class="cmd-text">writetable(results_table, 'results_summary.csv');</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Writes the final results comparison table to a CSV file. This CSV is the authoritative record of all experimental results and is imported directly into the report tables to ensure no transcription errors occur when copying numbers from MATLAB plots into Word.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 5: PYTHON LIBRARIES
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="python-libs">
+      <div class="section-label">Section 05</div>
+      <h2 class="section-title">Python Libraries — What Each One Does</h2>
+      <p class="section-intro">Python on the Raspberry Pi handles the real-time control loop during flight. Each library has a single job, and together they form a lightweight but complete control system that can run comfortably at 250 Hz on a Raspberry Pi 4.</p>
+
+      <div class="tool-grid">
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Core — smc_algorithm.py</div>
+          <div class="tool-name">NumPy</div>
+          <div class="tool-type">Numerical array and matrix mathematics</div>
+          <div class="tool-desc">NumPy provides the array and matrix operations that the SMC algorithm needs to run efficiently in Python. Without NumPy, every matrix multiplication and element-wise operation in the control law would have to be written as slow Python for-loops. With NumPy, operations like computing the sliding surface vector, applying the saturation function, and multiplying the inertia matrix all run in compiled C code behind the scenes, making the 250 Hz control loop fast enough to meet real-time requirements on the Raspberry Pi.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">np.array()</span>
+            <span class="tool-use-tag">np.dot()</span>
+            <span class="tool-use-tag">np.clip()</span>
+            <span class="tool-use-tag">np.sign()</span>
+            <span class="tool-use-tag">Matrix ops</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Core — mavlink_bridge.py</div>
+          <div class="tool-name">MAVROS (via rospy)</div>
+          <div class="tool-type">MAVLink protocol ROS interface</div>
+          <div class="tool-desc">MAVROS is a ROS package that provides a bridge between the ROS topic system and the MAVLink protocol used by PX4 on the Pixhawk. Rather than implementing MAVLink packet parsing ourselves (which would be a significant engineering task), we simply subscribe to MAVROS topics like /mavros/imu/data for attitude measurements and publish to /mavros/actuator_control to send motor commands. MAVROS handles all the protocol translation transparently. It also provides service calls for arming the drone and switching flight modes.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">rospy.Subscriber()</span>
+            <span class="tool-use-tag">rospy.Publisher()</span>
+            <span class="tool-use-tag">Imu message type</span>
+            <span class="tool-use-tag">ActuatorControl msg</span>
+            <span class="tool-use-tag">ServiceProxy arm</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Log conversion</div>
+          <div class="tool-name">pyulog</div>
+          <div class="tool-type">PX4 ULog file reader and converter</div>
+          <div class="tool-desc">PX4 saves flight logs in its own binary ULog format which cannot be read directly by MATLAB or spreadsheet tools. The pyulog library reads these binary files and extracts the logged topics as Python dictionaries. The convert_logs.py script uses pyulog to batch-convert every ULog file in the flight_logs folder into CSV files that MATLAB can then load with readtable(). This conversion step is the bridge between the hardware data and the MATLAB analysis pipeline.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">ULog()</span>
+            <span class="tool-use-tag">to_csv()</span>
+            <span class="tool-use-tag">message_formats</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Configuration</div>
+          <div class="tool-name">PyYAML</div>
+          <div class="tool-type">YAML file reader for parameter loading</div>
+          <div class="tool-desc">The config.yaml file stores all the SMC tuning parameters (lambda values, switching gains, boundary layer widths) as a simple text file. PyYAML reads this file at startup and passes the parameters to the SMC algorithm. This design means that when the team wants to try different gain values between flight tests, they only need to edit a text file and restart the ROS node — there is no need to touch the Python code at all. This separation of configuration from code is a fundamental software engineering best practice.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">yaml.safe_load()</span>
+            <span class="tool-use-tag">config.yaml parsing</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Timing</div>
+          <div class="tool-name">Python time module</div>
+          <div class="tool-type">Built-in Python standard library</div>
+          <div class="tool-desc">The time module provides the tools needed to enforce the 250 Hz control loop rate. The smc_node.py uses time.perf_counter() to measure exactly how long each control cycle takes and time.sleep() to wait out the remainder of the 4-millisecond window. If a loop iteration takes longer than 4 milliseconds due to system load, the code logs a warning but does not crash. Monitoring these overruns during testing reveals whether the Raspberry Pi has enough processing headroom for the chosen control rate.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">time.perf_counter()</span>
+            <span class="tool-use-tag">time.sleep()</span>
+            <span class="tool-use-tag">Loop timing</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-yellow">
+          <div class="tool-badge b-yellow">Diagnostics</div>
+          <div class="tool-name">Python logging module</div>
+          <div class="tool-type">Built-in Python standard library</div>
+          <div class="tool-desc">The logging module writes timestamped diagnostic messages to a file during flight. Every time the SMC computes a control output, the sliding surface values, torque commands, and loop timing are written to a rotating log file. This log is invaluable for post-flight debugging: if the drone behaved unexpectedly during a test, you can replay exactly what the SMC was computing at every moment to understand why. The log level (DEBUG, INFO, WARNING) can be set in config.yaml without code changes.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">logging.getLogger()</span>
+            <span class="tool-use-tag">RotatingFileHandler</span>
+            <span class="tool-use-tag">Flight diagnostics</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 6: PYTHON INSTALL COMMANDS
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="python-cmds">
+      <div class="section-label">Section 06</div>
+      <h2 class="section-title">Python Setup — Install Commands Explained</h2>
+      <p class="section-intro">These commands are run once on the Raspberry Pi to set up the Python environment. Every command is explained so you understand what it does, not just that it works.</p>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 1 — System Update (run first, always)</div>
+          <div class="cmd-lang">Raspberry Pi Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo apt update && sudo apt upgrade -y</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">apt update refreshes the package list from all configured software repositories. apt upgrade installs the latest versions of all currently installed packages. The -y flag auto-confirms all prompts. Running this before installing anything else ensures that all dependency version tables are current and prevents version conflicts later.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 2 — Python and Pip</div>
+          <div class="cmd-lang">Raspberry Pi Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo apt install python3.10 python3-pip python3-venv -y</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs Python 3.10 (the version ROS Noetic works best with), pip (the Python package manager), and venv (virtual environment tool). A virtual environment isolates this project's packages from the system Python so that installing pyulog does not break anything else on the Pi.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">python3 -m venv ~/smc_env</span></div>
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">source ~/smc_env/bin/activate</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Creates a virtual environment called smc_env in the home directory, then activates it. After activation, any pip install command installs packages only into this isolated environment. The terminal prompt changes to show (smc_env) to confirm it is active. This must be done every time a new terminal session is opened.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 3 — Install All Python Packages</div>
+          <div class="cmd-lang">Raspberry Pi Terminal (venv active)</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">pip install numpy==1.24.3</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs NumPy version 1.24.3 specifically. Pinning the version number ensures the project behaves the same on every machine and prevents breakage if NumPy releases an update that changes some behaviour. The exact version number comes from the requirements.txt file.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">pip install pyulog==0.9.1</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs the pyulog flight log converter. Version 0.9.1 is compatible with PX4 firmware v1.14 log format. Using a newer version of pyulog with an older log format can sometimes produce silent parsing errors where some topics are simply absent from the output CSV without any error message.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">pip install pyyaml</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs PyYAML for reading the config.yaml parameter file. YAML is chosen over JSON for the config file because it supports comments (lines starting with #), which makes it possible to document what each parameter does directly inside the configuration file. JSON does not support comments.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">pip install -r requirements.txt</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs all packages listed in requirements.txt at once. This is the shortcut command used when setting up on a new machine. The requirements.txt file lists every package with its exact version and is kept up to date every time a new dependency is added using pip freeze > requirements.txt.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 7: ROS PACKAGES
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="ros-pkgs">
+      <div class="section-label">Section 07</div>
+      <h2 class="section-title">ROS Packages — What Each One Provides</h2>
+      <p class="section-intro">ROS Noetic is the version of ROS that runs on Ubuntu 20.04, which is what the Raspberry Pi runs. Each ROS package below provides either core infrastructure or a specific capability our drone needs.</p>
+
+      <div class="tool-grid">
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Core ROS</div>
+          <div class="tool-name">ros-noetic-desktop-full</div>
+          <div class="tool-type">The complete ROS Noetic installation</div>
+          <div class="tool-desc">This meta-package installs the entire ROS Noetic base system including the communication middleware (topics, services, actions), the roscore master process that coordinates all nodes, the build system (catkin), rviz for 3D visualisation, and dozens of standard message types. Installing this one package gives you everything needed to write and run ROS nodes. It is approximately 1.5 GB and takes around 15 minutes to install on a Raspberry Pi 4.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">roscore</span>
+            <span class="tool-use-tag">rosrun</span>
+            <span class="tool-use-tag">roslaunch</span>
+            <span class="tool-use-tag">rostopic</span>
+            <span class="tool-use-tag">catkin_make</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Hardware Bridge</div>
+          <div class="tool-name">ros-noetic-mavros</div>
+          <div class="tool-type">MAVLink to ROS bridge package</div>
+          <div class="tool-desc">MAVROS is the most critical ROS package for this project. It runs as a ROS node that maintains a persistent MAVLink connection to the Pixhawk over a USB or UART serial link. It continuously reads all PX4 telemetry streams (attitude, IMU, GPS, battery, flight mode) and publishes them as ROS topics. Simultaneously, it subscribes to ROS topics from our SMC node and forwards the control commands to PX4 as the appropriate MAVLink messages. Without MAVROS we would need to implement the entire MAVLink protocol from scratch.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">/mavros/imu/data</span>
+            <span class="tool-use-tag">/mavros/state</span>
+            <span class="tool-use-tag">/mavros/actuator_control</span>
+            <span class="tool-use-tag">set_mode service</span>
+            <span class="tool-use-tag">arming service</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Hardware Bridge</div>
+          <div class="tool-name">ros-noetic-mavros-extras</div>
+          <div class="tool-type">Extended MAVROS message types and plugins</div>
+          <div class="tool-desc">This companion package to MAVROS provides additional message types and protocol plugins including support for vision-based position estimation, optical flow sensors, and extended camera control. For this project the most useful component is the GeographicLib datasets that MAVROS needs for coordinate frame transforms. Without installing this package, MAVROS sometimes fails to start because it cannot find the required geographic conversion data, producing a cryptic error message about missing datasets.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">GeographicLib data</span>
+            <span class="tool-use-tag">Extended msg types</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-teal">
+          <div class="tool-badge b-teal">Our Package</div>
+          <div class="tool-name">smc_controller_pkg</div>
+          <div class="tool-type">Custom ROS package (written by us)</div>
+          <div class="tool-desc">This is the ROS package we create ourselves. It contains our SMC node, the SMC algorithm module, the motor mixing module, and the MAVLink bridge wrapper. Creating it as a proper ROS package rather than a standalone Python script means it integrates cleanly with the ROS build system, can be launched with a single roslaunch command, and has proper dependency declarations so that anyone can build it on a fresh machine by just running catkin_make. The package follows standard ROS conventions for folder layout and naming.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">smc_node.py</span>
+            <span class="tool-use-tag">smc_flight.launch</span>
+            <span class="tool-use-tag">config.yaml</span>
+            <span class="tool-use-tag">CMakeLists.txt</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 8: ROS COMMANDS
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="ros-cmds">
+      <div class="section-label">Section 08</div>
+      <h2 class="section-title">ROS Setup and Flight Commands Explained</h2>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 1 — Install ROS Noetic on Raspberry Pi</div>
+          <div class="cmd-lang">Ubuntu 20.04 Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Adds the official ROS package repository to the system's software sources list. Without this, apt does not know where to find ROS packages because they are not in the standard Ubuntu repositories. focal is the codename for Ubuntu 20.04.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo apt install ros-noetic-desktop-full -y</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs the full ROS Noetic desktop environment. This takes around 15 minutes on the Pi. Run this once during the initial hardware setup, not before every flight test.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc</span></div>
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">source ~/.bashrc</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">The setup.bash script adds all ROS commands (roscore, rosrun, roslaunch, etc.) to the system PATH and sets all required environment variables. Adding it to .bashrc means it runs automatically every time a terminal opens, so the ROS commands are always available without needing to source it manually.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 2 — Install MAVROS</div>
+          <div class="cmd-lang">Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo apt install ros-noetic-mavros ros-noetic-mavros-extras -y</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Installs MAVROS and its extras in one command.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh</span></div>
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo bash install_geographiclib_datasets.sh</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Downloads and installs the GeographicLib datasets that MAVROS requires for Earth coordinate frame conversions. This step is frequently missed by beginners and results in MAVROS refusing to start. It only needs to be run once per machine.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Step 3 — Build the ROS Workspace</div>
+          <div class="cmd-lang">Terminal (run from the ros_ws directory)</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">cd ~/quadcopter_smc_project/05_hardware/ros_ws/</span></div>
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">catkin_make</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">catkin_make is the ROS build command. It reads CMakeLists.txt inside our smc_controller_pkg, compiles any C++ code (there is none here since we use Python, but the manifest still needs building), and sets up the workspace so that roslaunch can find our package. This must be re-run every time a new Python file is added to the package or the CMakeLists.txt is changed.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">source devel/setup.bash</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Activates the workspace so that ROS can find our custom package. Unlike the system setup.bash (added to .bashrc), this workspace setup.bash must be sourced every time a new terminal is opened for development. Add it to .bashrc once the workspace is stable and no longer changing frequently.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Pre-Flight Check Commands (run before every flight test)</div>
+          <div class="cmd-lang">Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rostopic echo /mavros/state</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Prints the current Pixhawk connection state in real time. The connected field must show true, and the armed field should show false before any test begins. If connected is false, the USB/UART cable is not properly connected or MAVROS is not receiving heartbeat packets from PX4.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rostopic echo /mavros/imu/data | head -20</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Prints the first 20 lines of attitude data coming from the Pixhawk IMU. Use this to confirm that the attitude estimates look reasonable (all angles near zero when the drone is sitting level on a table) and that the update rate looks healthy (timestamps advancing at roughly 4ms intervals for 250 Hz).</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rostopic hz /mavros/imu/data</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Measures the actual publishing rate of the IMU topic in Hz. The reported rate should be close to 250 Hz. If it is significantly lower (e.g. 50 Hz), the MAVROS configuration needs adjusting — the IMU stream rate can be set in the MAVROS launch file using the imu_raw_pub_rate parameter.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">roslaunch smc_controller_pkg smc_flight.launch</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">The single command that starts everything for a flight test. The launch file starts MAVROS with the correct connection parameters, then starts our smc_node.py with the config.yaml parameters loaded. All output from both nodes appears in the same terminal, colour-coded by node name. This is the command used at the start of every flight test in Phase 6.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Debugging Commands (used when something goes wrong)</div>
+          <div class="cmd-lang">Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rosnode list</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Lists all currently running ROS nodes. After launching, you should see /mavros and /smc_controller in the list. If one is missing it means that node crashed at startup, and you need to check its output for error messages.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rqt_plot /mavros/imu/data/angular_velocity/x</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Opens a live scrolling plot of the roll rate from the IMU. Extremely useful during bench testing (propellers removed) to visually confirm that the controller is responding correctly to manually tilting the drone before any motors are armed.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">rosbag record -a -O flight_test_01.bag</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Records every ROS topic to a .bag file as a backup logging mechanism. The -a flag records all topics, and -O sets the output filename. Even if the PX4 ULog is the primary data source for analysis, having a ROS bag file as a backup has saved many test sessions where the ULog file was corrupted or incomplete.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 9: PX4 & QGC
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="px4">
+      <div class="section-label">Section 09</div>
+      <h2 class="section-title">PX4 Autopilot and QGroundControl</h2>
+      <p class="section-intro">PX4 is the open-source flight controller firmware running on the Pixhawk 4. QGroundControl (QGC) is the ground station application used to configure and calibrate PX4. Together they form the hardware interface layer that our software commands.</p>
+
+      <div class="tool-grid">
+
+        <div class="tool-card tc-purple">
+          <div class="tool-badge b-purple">Flight Controller</div>
+          <div class="tool-name">PX4 Autopilot v1.14</div>
+          <div class="tool-type">Open-source flight controller firmware</div>
+          <div class="tool-desc">PX4 is the firmware that runs directly on the Pixhawk microcontroller. It handles all hardware-level operations: reading the IMU at 1000 Hz and filtering it, running the Extended Kalman Filter for state estimation at 250 Hz, generating ESC PWM signals at 400 Hz, monitoring battery voltage and GPS signal, and enforcing all safety failsafes. For this project we run PX4 in OFFBOARD mode, which means it accepts attitude and actuator control commands from our Raspberry Pi SMC node over MAVLink and executes them as given, while still monitoring for signal loss and battery failsafe conditions.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">OFFBOARD mode</span>
+            <span class="tool-use-tag">EKF state estimation</span>
+            <span class="tool-use-tag">MAVLink server</span>
+            <span class="tool-use-tag">ESC PWM</span>
+            <span class="tool-use-tag">Safety failsafe</span>
+            <span class="tool-use-tag">ULog recording</span>
+          </div>
+        </div>
+
+        <div class="tool-card tc-purple">
+          <div class="tool-badge b-purple">Ground Station</div>
+          <div class="tool-name">QGroundControl</div>
+          <div class="tool-type">GUI application for PX4 configuration and monitoring</div>
+          <div class="tool-desc">QGroundControl is the desktop application used on a laptop to configure the Pixhawk over USB. Every calibration, every parameter change, every firmware flash goes through QGC. It provides a graphical interface for the six mandatory calibration steps (accelerometer, gyroscope, magnetometer, level horizon, radio transmitter, ESC), a parameter editor for searching and setting the thousands of PX4 configuration parameters, a real-time attitude indicator for monitoring the EKF output, and log download for retrieving ULog files after flight. It runs on Windows, macOS, and Ubuntu.</div>
+          <div class="tool-uses">
+            <span class="tool-use-tag">Firmware flash</span>
+            <span class="tool-use-tag">Sensor calibration</span>
+            <span class="tool-use-tag">Parameter editor</span>
+            <span class="tool-use-tag">Log download</span>
+            <span class="tool-use-tag">Live telemetry</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="info-card" style="margin-top:20px;border-left:3px solid var(--purple);">
+        <h3 style="color:var(--purple);">Critical PX4 Parameters to Configure</h3>
+        <p>COM_OF_LOSS_T — set this to 1.0 second. This is the OFFBOARD connection timeout. If the Raspberry Pi stops sending MAVLink heartbeats for more than this duration (because our node crashed), PX4 automatically switches back to manual mode rather than continuing to execute the last received command indefinitely. This is the primary software safety net.</p>
+        <p>SDLOG_PROFILE — set this to include the Full log profile. This ensures that all attitude, actuator, and sensor topics are recorded in the ULog at maximum rate. The default logging profile omits some topics that are needed for the Phase 6 analysis.</p>
+        <p>IMU_GYRO_RATEMAX — set this to 400 Hz. This controls how fast PX4 publishes gyroscope data via MAVLink. A higher rate ensures our 250 Hz SMC loop always has fresh measurements and does not use stale data from the previous time step.</p>
+        <p>COM_RCL_EXCEPT — set this to 4 (OFFBOARD mode). This tells PX4 that it is normal to not have a radio transmitter signal when in OFFBOARD mode and prevents it from triggering a failsafe the moment our RC transmitter is switched off during an autonomous test.</p>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 10: HARDWARE COMMANDS
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="hw-cmds">
+      <div class="section-label">Section 10</div>
+      <h2 class="section-title">Hardware Setup Commands and Procedures</h2>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Flash PX4 Firmware via QGroundControl</div>
+          <div class="cmd-lang">QGroundControl GUI (no terminal needed)</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">1.</span><span class="cmd-text">Connect Pixhawk to laptop via USB-C cable</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">QGroundControl detects the Pixhawk automatically when connected and shows the vehicle icon in the top bar.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">2.</span><span class="cmd-text">Navigate to: Vehicle Setup > Firmware > PX4 Pro Stable v1.14</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Select PX4 Pro (not ArduPilot) and the latest stable release (v1.14 at time of writing). Click OK to flash. The Pixhawk reboots into bootloader mode automatically and flashing takes about 2 minutes. Do not disconnect USB during flashing.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">3.</span><span class="cmd-text">Navigate to: Vehicle Setup > Airframe > Quadrotor X > Generic Quadrotor X</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Selecting the correct airframe type loads the appropriate motor output assignments. For an X-configuration quadcopter, this maps Motor 1 to front-right, Motor 2 to rear-left, Motor 3 to front-left, Motor 4 to rear-right in PX4's numbering convention (note this differs from the academic convention used in the modelling equations).</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Configure Serial Port for MAVROS on Raspberry Pi</div>
+          <div class="cmd-lang">Terminal</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">ls /dev/ttyUSB* /dev/ttyACM*</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Lists all USB serial devices. When the Pixhawk is connected via USB, it typically appears as /dev/ttyACM0. This device name goes into the MAVROS launch file as the connection URL.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo usermod -a -G dialout $USER</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Adds the current user to the dialout group, which has permission to access serial port devices. Without this, MAVROS will fail to open /dev/ttyACM0 with a Permission denied error. A logout and login is required after this command for the group change to take effect.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">sudo chmod 666 /dev/ttyACM0</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Grants read and write permission to all users for the Pixhawk serial port. This is a temporary fix if the usermod approach has not yet taken effect. The permission resets when the cable is unplugged and re-plugged, so the usermod approach is the proper long-term solution.</div>
+        </div>
+      </div>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-title">Convert Flight Logs After Each Test</div>
+          <div class="cmd-lang">Terminal (on laptop, not Pi)</div>
+        </div>
+        <div class="cmd-body">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">pip install pyulog</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Install pyulog on the analysis laptop (not the Pi). Log conversion is done on the laptop because it is faster and does not consume Pi resources.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">ulog2csv 06_experimental/flight_logs/smc_step_01.ulg -o 06_experimental/csv_data/</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Converts a single ULog file to a set of CSV files, one per logged topic. The -o flag specifies the output directory. Typical output files include vehicle_attitude_0.csv, actuator_controls_0_0.csv, and sensor_combined_0.csv. These CSV files are then loaded by analyse_flight.m in MATLAB.</div>
+          <hr class="cmd-section-sep">
+          <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">python3 06_experimental/convert_logs.py</span></div>
+          <div class="cmd-comment" style="padding-left:28px;margin-bottom:10px;">Runs the batch conversion script that processes every ULog file in the flight_logs folder in one go. More convenient than running ulog2csv manually for each file when there are 30 or more flight logs to process after a full day of testing.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 11: INTEGRATION FLOW
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="flow">
+      <div class="section-label">Section 11</div>
+      <h2 class="section-title">How All the Languages Connect Together</h2>
+      <p class="section-intro">The four languages and the hardware form a data pipeline. Understanding this pipeline is essential because any error at one stage affects everything downstream. Here is the complete end-to-end flow from sensor to motor, and from raw data to published result.</p>
+
+      <div class="flow-wrap">
+
+        <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:20px;">Real-time control loop (runs at 250 Hz during flight)</div>
+
+        <div class="phase-row">
+          <div class="phase-num-box" style="border-left:3px solid var(--green);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--green);"></div>
+            Pixhawk Hardware
+          </div>
+          <div class="phase-content">
+            <h4>IMU reads angular velocity and acceleration at 1000 Hz</h4>
+            <p>The MPU-6000 IMU sensor inside the Pixhawk 4 samples the gyroscope and accelerometer at 1000 Hz. PX4 firmware fuses these samples with magnetometer and barometer readings in its Extended Kalman Filter, running at 250 Hz, to produce a smooth estimate of roll, pitch, yaw, and their rates. This fused estimate is what gets sent to our SMC node, not the raw sensor values.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--purple);color:var(--purple);">PX4 C++ firmware</span>
+              <span class="lang-chip" style="border-color:var(--border2);color:var(--text3);">Hardware layer</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;color:var(--border2);font-size:20px;padding:6px 0;">↓ &nbsp; MAVLink serial (USB) &nbsp; ↓</div>
+
+        <div class="phase-row">
+          <div class="phase-num-box" style="border-left:3px solid var(--teal);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);"></div>
+            MAVROS Node
+          </div>
+          <div class="phase-content">
+            <h4>MAVROS converts MAVLink packets to ROS topics</h4>
+            <p>The MAVROS ROS node runs continuously on the Raspberry Pi, reading the incoming MAVLink serial stream from the Pixhawk. Every attitude estimate packet is converted into a sensor_msgs/Imu ROS message and published to the /mavros/imu/data topic. Our SMC node subscribes to this topic and gets called automatically every time a new message arrives, which is 250 times per second.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--teal);color:var(--teal);">ROS / MAVROS</span>
+              <span class="lang-chip" style="border-color:var(--yellow);color:var(--yellow);">C++ (MAVROS internal)</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;color:var(--border2);font-size:20px;padding:6px 0;">↓ &nbsp; ROS topic publish/subscribe &nbsp; ↓</div>
+
+        <div class="phase-row">
+          <div class="phase-num-box" style="border-left:3px solid var(--yellow);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);"></div>
+            SMC Node (Python)
+          </div>
+          <div class="phase-content">
+            <h4>Python runs the SMC algorithm on the received attitude data</h4>
+            <p>The smc_node.py callback function fires each time new IMU data arrives. It extracts the roll, pitch, yaw angles and angular rates from the ROS message, passes them to smc_algorithm.py, which computes the sliding surface values using NumPy, evaluates the equivalent control from the stored nominal dynamics, adds the saturation-function switching control, and returns three torque commands. The entire computation takes under 0.5 milliseconds on the Raspberry Pi 4, well within the 4-millisecond budget.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--yellow);color:var(--yellow);">Python 3.10</span>
+              <span class="lang-chip" style="border-color:var(--yellow);color:var(--yellow);">NumPy</span>
+              <span class="lang-chip" style="border-color:var(--teal);color:var(--teal);">ROS</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;color:var(--border2);font-size:20px;padding:6px 0;">↓ &nbsp; motor_mixer.py converts torques to motor speeds &nbsp; ↓</div>
+
+        <div class="phase-row">
+          <div class="phase-num-box" style="border-left:3px solid var(--teal);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);"></div>
+            MAVROS Publish
+          </div>
+          <div class="phase-content">
+            <h4>Motor speed commands published back to Pixhawk over MAVLink</h4>
+            <p>The four individual motor speed commands (normalised between 0 and 1) are packed into an ActuatorControl ROS message and published to the /mavros/actuator_control topic. MAVROS converts this message back into a MAVLink ACTUATOR_CONTROL_TARGET packet and sends it over the serial link to the Pixhawk. PX4 maps the normalised values to ESC PWM signals (typically 1000 to 2000 microseconds) and sends them to each ESC at 400 Hz.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--teal);color:var(--teal);">ROS / MAVROS</span>
+              <span class="lang-chip" style="border-color:var(--purple);color:var(--purple);">PX4 firmware</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;color:var(--border2);font-size:20px;padding:6px 0;">↓ &nbsp; PWM signals &nbsp; ↓</div>
+
+        <div class="phase-row">
+          <div class="phase-num-box" style="border-left:3px solid var(--green);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--green);"></div>
+            ESCs and Motors
+          </div>
+          <div class="phase-content">
+            <h4>ESCs drive the brushless motors at the commanded speeds</h4>
+            <p>Each of the four 30A electronic speed controllers receives a PWM signal from the Pixhawk and drives its brushless motor at the corresponding speed. The spinning propellers generate the thrust forces and reactive torques that physically rotate the drone. The IMU then measures this resulting rotation and the loop completes back at the top. The entire loop from measurement to actuation takes under 4 milliseconds, giving a feedback bandwidth of 250 Hz.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--green);color:var(--green);">Hardware only</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);">Offline analysis pipeline (runs after each flight test)</div>
+
+        <div class="phase-row" style="margin-top:16px;">
+          <div class="phase-num-box" style="border-left:3px solid var(--orange);">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);"></div>
+            Post-flight
+          </div>
+          <div class="phase-content">
+            <h4>Python converts ULog to CSV → MATLAB analyses and plots → Report figures</h4>
+            <p>After each flight test, the ULog binary file is downloaded from the Pixhawk over USB using QGroundControl. convert_logs.py (Python + pyulog) batch-converts all ULog files to CSV. analyse_flight.m (MATLAB) loads the CSV files, computes all performance metrics, runs the paired t-test, and saves a results_summary.csv. generate_figures.m then produces all publication-quality PDF plots for the Phase 7 report. This three-step pipeline (Python for conversion, MATLAB for analysis, MATLAB for plotting) is clean and reproducible.</p>
+            <div class="phase-langs">
+              <span class="lang-chip" style="border-color:var(--yellow);color:var(--yellow);">Python pyulog</span>
+              <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);">MATLAB</span>
+              <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);">Stats Toolbox</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         SECTION 12: PHASE-BY-PHASE USAGE
+    ══════════════════════════════════════ -->
+    <section class="section scroll-anchor" id="phases">
+      <div class="section-label">Section 12</div>
+      <h2 class="section-title">Which Tool Is Used in Which Phase</h2>
+      <p class="section-intro">A quick reference showing exactly which part of the repository and which tools are active in each of the seven project phases.</p>
+
+      <div class="def-list">
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);padding:4px 10px;border-radius:4px;">Phase 1</span>
+          </div>
+          <div class="def-desc">Folder 01_model. Tools: MATLAB only. Toolboxes: Symbolic Math (for verifying coupling terms), ODE45 (for simulation). No hardware, no Python, no ROS. The only output is a set of validated model plots confirming the ODE is physically correct.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);padding:4px 10px;border-radius:4px;">Phase 2</span>
+          </div>
+          <div class="def-desc">Folder 02_pid_baseline. Tools: MATLAB and Simulink. Toolboxes: Control System Toolbox, Simulink Control Design Toolbox. The pid_simulink.slx Simulink model is built here. Outputs are PID gains, step response plots, and the first disturbance rejection result to use as the baseline benchmark.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);padding:4px 10px;border-radius:4px;">Phase 3</span>
+          </div>
+          <div class="def-desc">Folder 03_smc_design. Tools: MATLAB only. Toolboxes: Symbolic Math Toolbox for Lyapunov verification. No Simulink yet. The output of this phase is the complete analytical SMC control law and a verified stability proof. Everything is still mathematical at this stage.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--orange);color:var(--orange);padding:4px 10px;border-radius:4px;">Phase 4</span>
+          </div>
+          <div class="def-desc">Folder 04_simulation. Tools: MATLAB and Simulink. Toolboxes: Statistics Toolbox for RMSE. The full_model.slx Simulink file is the central deliverable. All five test cases are run and both PID and SMC results are compared. This phase produces the simulation half of the final results chapter.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--green);color:var(--green);padding:4px 10px;border-radius:4px;">Phase 5</span>
+          </div>
+          <div class="def-desc">Folder 05_hardware. Tools: QGroundControl (for PX4), Python and ROS on Raspberry Pi, MATLAB for thrust stand data fitting. This is the most complex phase involving all four tools simultaneously. Hardware is assembled, PX4 is configured, the ROS workspace is built, and the first bench tests happen with propellers removed.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--green);color:var(--green);padding:4px 10px;border-radius:4px;">Phase 6</span>
+          </div>
+          <div class="def-desc">Folder 06_experimental. Tools: All hardware tools for flight tests, Python for log conversion, MATLAB for analysis. The smc_flight.launch command is the start of every test session. After testing, convert_logs.py runs first, then analyse_flight.m in MATLAB. The experimental results chapter is built entirely from this folder.</div>
+        </div>
+
+        <div class="def-item">
+          <div class="def-term">
+            <span class="lang-chip" style="border-color:var(--text3);color:var(--text3);padding:4px 10px;border-radius:4px;">Phase 7</span>
+          </div>
+          <div class="def-desc">Folder 07_report. Tools: MATLAB for generating final figures from all previous phases, Microsoft Word for writing, BibTeX for references. No new experiments, no code changes. All figures are regenerated from existing data using generate_figures.m scripts to ensure they are all consistent in style and format.</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Active sidebar tracking
+const sections = document.querySelectorAll('.scroll-anchor');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === '#' + id) a.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => obs.observe(s));
+
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
