@@ -157,14 +157,14 @@ Build and Validate the Nonlinear Rotational Dynamics Model of the Quadcopter bef
 
 Before Moving to Phase 2, Confirm you can Explain:
 
-- [ ] What each state variable means
-- [ ] Why the state vector has 6 states
-- [ ] Why equations are written in body frame
-- [ ] Why radians are mandatory
-- [ ] Why coupling terms exist
-- [ ] Why nonlinear systems need robust control
-- [ ] What `ode45` actually does
-- [ ] What `dxdt = f(x,u)` means physically
+- [ ] What Each State Variable means
+- [ ] Why the State Vector has 6 States
+- [ ] Why Equations are Written in Body Frame
+- [ ] Why Radians are Mandatory
+- [ ] Why Coupling Terms Exist
+- [ ] Why Nonlinear Systems need Robust Control
+- [ ] What `ode45` actually Does
+- [ ] What `dxdt = f(x,u)` means Physically
 
 ---
 
