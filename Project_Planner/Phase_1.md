@@ -1,7 +1,7 @@
 # Phase 1 — Quadcopter System Modeling
 
 ## Goal
-Build and validate the nonlinear rotational dynamics model of the quadcopter before implementing any controller.
+Build and Validate the Nonlinear Rotational Dynamics Model of the Quadcopter before Implementing any Controller.
 
 ---
 
@@ -11,7 +11,6 @@ Build and validate the nonlinear rotational dynamics model of the quadcopter bef
 - [ ] Complete MATLAB Onramp
 - [ ] Understand MATLAB Scripts vs Functions
 - [ ] Learn Vectors, Matrices, and Indexing
-- [ ] Practice Plotting Graphs in MATLAB
 - [ ] Understand Function Inputs and Outputs
 - [ ] Learn How to Create and use Structs
 
@@ -22,71 +21,61 @@ Build and validate the nonlinear rotational dynamics model of the quadcopter bef
 - [ ] Understand Ordinary Differential Equations
 - [ ] Learn Basic Linear Algebra Intuition
 - [ ] Understand Vectors and Matrices Geometrically
-- [ ] Learn Rotational Newton's Law:
-  \[
-  \tau = I\alpha
-  \]
+- [ ] Learn Rotational Newton's Law
 - [ ] Understand Moment of Inertia Physically
 - [ ] Understand Angular Velocity and Angular Acceleration
 
 ---
 
 ## Quadcopter Dynamics
-- [ ] Learn body frame vs inertial frame
-- [ ] Understand roll, pitch, and yaw
-- [ ] Understand ZYX rotation order
-- [ ] Derive rotation matrices
-- [ ] Understand gyroscopic coupling
-- [ ] Understand why nonlinear coupling exists
-- [ ] Understand why SMC is needed for nonlinear systems
+- [ ] Learn Body Frame vs Inertial Frame
+- [ ] Understand Roll, Pitch, and Yaw
+- [ ] Understand ZYX Rotation Order
+- [ ] Derive Rotation Matrices
+- [ ] Understand Gyroscopic Coupling
+- [ ] Understand Why Nonlinear Coupling exists
+- [ ] Understand Why SMC is needed for Nonlinear Systems
 
 ---
 
 # Mathematical Modeling
 
 ## Reference Frames
-- [ ] Define inertial frame
-- [ ] Define body frame
-- [ ] Understand Euler angles
-- [ ] Derive full rotation matrix:
-  \[
-  R = R_zR_yR_x
-  \]
-
+- [ ] Define Inertial Frame
+- [ ] Define Body Frame
+- [ ] Understand Euler Angles
+- [ ] Derive Full Rotation Matrix
 ---
 
 ## Inertia Tensor
-- [ ] Define inertia matrix
-- [ ] Understand diagonal inertia tensor
-- [ ] Estimate realistic inertia values
-- [ ] Understand why \(I_{zz} > I_{xx}\)
+- [ ] Define Inertia Matrix
+- [ ] Understand Diagonal Inertia Tensor
+- [ ] Estimate Realistic Inertia Values
+- [ ] Understand Why \(I_{zz} > I_{xx}\)
 
 ---
 
 ## Newton-Euler Equations
-- [ ] Write rotational dynamics equation:
-  \[
-  I\dot{\omega} = \tau - \omega \times (I\omega)
-  \]
-- [ ] Expand roll equation
-- [ ] Expand pitch equation
-- [ ] Expand yaw equation
-- [ ] Verify coupling term signs carefully
+- [ ] Write Rotational Dynamics Equation
+- [ ] Expand Roll Equation
+- [ ] Expand Pitch Equation
+- [ ] Expand Yaw Equation
+- [ ] Verify Coupling Term Signs Carefully
 
 ---
 
 ## State-Space Representation
-- [ ] Define state vector
-- [ ] Define input vector
-- [ ] Convert second-order equations to first-order
-- [ ] Write full nonlinear state equations
+- [ ] Define State Vector
+- [ ] Define Input Vector
+- [ ] Convert Second-Order Equations to First-Order
+- [ ] Write Full Nonlinear State Equations
 
 ---
 
 # MATLAB Implementation
 
 ## Project Setup
-- [ ] Create project folder structure
+- [ ] Create Project Folder Structure
 - [ ] Create `parameters.m`
 - [ ] Create `dynamics.m`
 - [ ] Create `simulate_openloop.m`
@@ -94,79 +83,79 @@ Build and validate the nonlinear rotational dynamics model of the quadcopter bef
 ---
 
 ## Parameters File
-- [ ] Define drone mass
-- [ ] Define arm length
-- [ ] Define inertia values
-- [ ] Define thrust coefficient
-- [ ] Define drag coefficient
-- [ ] Calculate hover RPM
-- [ ] Verify hover RPM is realistic
+- [ ] Define Drone Mass
+- [ ] Define Arm Length
+- [ ] Define Inertia Values
+- [ ] Define Thrust Coefficient
+- [ ] Define Drag Coefficient
+- [ ] Calculate Hover RPM
+- [ ] Verify Hover RPM is Realistic
 
 ---
 
 ## Dynamics Function
-- [ ] Define state variables
-- [ ] Define control inputs
-- [ ] Implement roll dynamics
-- [ ] Implement pitch dynamics
-- [ ] Implement yaw dynamics
-- [ ] Assemble state derivative vector
-- [ ] Add detailed comments
+- [ ] Define State Variables
+- [ ] Define Control Inputs
+- [ ] Implement Roll Dynamics
+- [ ] Implement Pitch Dynamics
+- [ ] Implement Yaw Dynamics
+- [ ] Assemble State Derivative Vector
+- [ ] Add Detailed Comments
 
 ---
 
 ## Open-Loop Simulation
 - [ ] Configure `ode45`
-- [ ] Set tight solver tolerances
-- [ ] Define initial conditions
-- [ ] Apply small roll torque input
-- [ ] Run open-loop simulation
-- [ ] Plot roll angle response
-- [ ] Plot roll rate response
-- [ ] Plot pitch coupling response
-- [ ] Plot yaw coupling response
+- [ ] Set Tight Solver Tolerances
+- [ ] Define Initial Conditions
+- [ ] Apply Small Roll Torque Input
+- [ ] Run Open-loop Simulation
+- [ ] Plot Roll Angle Response
+- [ ] Plot Roll Rate Response
+- [ ] Plot Pitch Coupling Response
+- [ ] Plot Yaw Coupling Response
 
 ---
 
 # Validation Checks
 
 ## Numerical Validation
-- [ ] Verify roll acceleration matches theory
-- [ ] Ensure error is below 1%
-- [ ] Compare simulated vs analytical roll response
+- [ ] Verify Roll Acceleration Matches Theory
+- [ ] Ensure Error is Below 1%
+- [ ] Compare Simulated vs Analytical Roll Response
 
 ---
 
 ## Nonlinear Coupling Validation
-- [ ] Verify pitch response is nonzero
-- [ ] Verify yaw response is nonzero
-- [ ] Confirm coupling terms are active
+- [ ] Verify Pitch Response is Nonzero
+- [ ] Verify Yaw Response is Nonzero
+- [ ] Confirm Coupling Terms are Active
 
 ---
 
 ## Physical Validation
-- [ ] Verify roll angle grows quadratically
-- [ ] Verify roll rate grows linearly
-- [ ] Verify system behaves physically correctly
+- [ ] Verify Roll Angle Grows Quadratically
+- [ ] Verify Roll Rate Grows Linearly
+- [ ] Verify System Behaves Physically Correctly
 
 ---
 
 # Documentation
 
 ## Report Preparation
-- [ ] Save all plots
-- [ ] Screenshot validation figures
-- [ ] Document assumptions
-- [ ] Document parameter values
-- [ ] Write system modeling explanation
-- [ ] Explain physical meaning of coupling terms
-- [ ] Add equations to report
+- [ ] Save All Plots
+- [ ] Screenshot Validation Figures
+- [ ] Document Assumptions
+- [ ] Document Parameter Values
+- [ ] Write System Modeling Explanation
+- [ ] Explain Physical Meaning of Coupling Terms
+- [ ] Add Equations to Report
 
 ---
 
 # Self-Understanding Checklist
 
-Before moving to Phase 2, confirm you can explain:
+Before Moving to Phase 2, Confirm you can Explain:
 
 - [ ] What each state variable means
 - [ ] Why the state vector has 6 states
@@ -181,14 +170,14 @@ Before moving to Phase 2, confirm you can explain:
 
 # Phase 1 Completion Criteria
 
-Phase 1 is complete only if:
+Phase 1 is Complete Only If:
 
-- [ ] Open-loop model runs successfully
-- [ ] Validation error is below 1%
-- [ ] Coupling terms are visible
-- [ ] All plots make physical sense
-- [ ] Every equation is understood physically
-- [ ] Every line of code is understood
-- [ ] Results are documented properly
+- [ ] Open-loop Model Runs Successfully
+- [ ] Validation Error is Below 1%
+- [ ] Coupling Terms are Visible
+- [ ] All Plots make Physical Sense
+- [ ] Every Equation is Understood Physically
+- [ ] Every Line of Code is Understood
+- [ ] Results are Documented Properly
 
 ---
