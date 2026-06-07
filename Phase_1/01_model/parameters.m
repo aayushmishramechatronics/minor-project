@@ -9,7 +9,6 @@
 %         Angle:  radians [rad]   (convert to degrees only when plotting)
 %         Force:  Newtons [N]
 %         Torque: Newton-metres [N*m]
-% =========================================================
 
 clear; clc;
 
@@ -73,7 +72,6 @@ kF = 2.980e-6;          % thrust coefficient      [N*s^2/rad^2]
 kM = 1.140e-7;          % drag torque coefficient [N*m*s^2/rad^2]
 
 %  SECTION 5: PACK INTO STRUCT
-%
 %  why use a struct?
 %    if we passed each constant as a separate argument, every function
 %    call would look like: dynamics(t, x, u, g, m, L, Ixx, Iyy, Izz, kF, kM)
@@ -123,7 +121,6 @@ fprintf('  hover calculations:\n');
 fprintf('    Thrust per motor    : %.4f N\n',  p.F_hover);
 fprintf('    Motor speed (hover) : %.1f rad/s\n', p.w_hover);
 fprintf('    Motor speed (hover) : %.0f RPM\n',   p.rpm_hover);
-fprintf('==============================================================\n');
 
 %  SECTION 8: SANITY CHECKS
 passed = true;
@@ -153,5 +150,3 @@ if passed
     fprintf('\n  all sanity checks passed.\n');
     fprintf('  ready to run dynamics.m and simulate_openloop.m\n');
 end
-
-fprintf('==============================================================\n\n');
