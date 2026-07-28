@@ -15,17 +15,16 @@ clear; clc;
 %  SECTION 1: PHYSICAL CONSTANTS
 g = 9.81;   % gravitational acceleration [m/s^2]
 
-%  SECTION 2: YOUR DRONE MEASUREMENTS
-%  Change these two values to match your specific drone.
+%  SECTION 2: DRONE MEASUREMENTS
+%  change these two values to match the specific drone.
 
 m = 0.5;                % total mass, fully assembled with battery [kg]
                         % HOW TO MEASURE: place the assembled drone on a
                         % kitchen scale. Include battery, propellers, everything.
 
 L = 0.175;              % arm length [m]
-                        % HOW TO MEASURE: distance from the centre of the
-                        % frame to the centre of the motor shaft.
-                        % For a 450mm frame this is approximately 0.175 m.
+                        % HOW TO MEASURE: distance from the centre of the frame to the centre of the motor shaft.
+                        % For a 450mm frame this is approximately 0.175m.
 
 %  SECTION 3: MOMENTS OF INERTIA [kg*m^2]
 %
@@ -54,10 +53,9 @@ Izz = 8.801e-3;         % yaw axis moment of inertia [kg*m^2]
 
 %  SECTION 4: AERODYNAMIC COEFFICIENTS
 %  kF (thrust coefficient):
-%    each motor spinning at angular velocity omega [rad/s] produces
-%    an upward thrust force: F = kF * omega^2  [N]
+%    each motor spinning at angular velocity omega [rad/s] produces an upward thrust force: F = kF * omega^2  [N]
 %    this coefficient depends on the propeller size, pitch, and air density.
-%    MUST be measured on a thrust stand for your specific motor + propeller.
+%    MUST be measured on a thrust stand for the specific motor + propeller.
 %    typical range for 10-inch propellers: 2.5e-6 to 3.5e-6
 %
 %  kM (drag torque coefficient):
